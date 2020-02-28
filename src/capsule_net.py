@@ -13,15 +13,16 @@ from keras.layers.normalization import BatchNormalization
 from keras import optimizers
 from keras.preprocessing.image import ImageDataGenerator
 from keras.callbacks import ModelCheckpoint
+from keras import initializers
 from keras.preprocessing import image
 from keras.preprocessing.image import img_to_array
 from keras import layers
 from keras.models import load_model
+import matplotlib.image as mpimg
+
 
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib as mpl
-import matplotlib.image as mpimg
 import seaborn as sns
 
 import tensorflow as tf
@@ -44,6 +45,8 @@ import pickle
 import matplotlib.pyplot as plt
 import cv2
 import random
+import os
+
 
 class Length(layers.Layer):
     """
@@ -52,6 +55,7 @@ class Length(layers.Layer):
     inputs: shape=[None, num_vectors, dim_vector]
     output: shape=[None, num_vectors]
     """
+
     def call(self, inputs, **kwargs):
         return K.sqrt(K.sum(K.square(inputs), -1) + K.epsilon())
 
@@ -77,6 +81,7 @@ class Mask(layers.Layer):
         out2 = Mask()([x, y])  # out2.shape=[8,6]. Masked with true labels y. Of course y can also be manipulated.
         ```
     """
+
     def call(self, inputs, **kwargs):
         if type(inputs) is list:  # true label is provided with shape = [None, n_classes], i.e. one-hot code.
             assert len(inputs) == 2
@@ -128,6 +133,7 @@ class CapsuleLayer(layers.Layer):
     :param dim_capsule: dimension of the output vectors of the capsules in this layer
     :param routings: number of iterations for the routing algorithm
     """
+
     def __init__(self, num_capsule, dim_capsule, routings=3,
                  kernel_initializer='glorot_uniform',
                  **kwargs):
@@ -216,7 +222,7 @@ def PrimaryCap(inputs, dim_capsule, n_channels, kernel_size, strides, padding):
     :param n_channels: the number of types of capsules
     :return: output tensor, shape=[None, num_capsule, dim_capsule]
     """
-    output = layers.Conv2D(filters=dim_capsule*n_channels, kernel_size=kernel_size, strides=strides, padding=padding,
+    output = layers.Conv2D(filters=dim_capsule * n_channels, kernel_size=kernel_size, strides=strides, padding=padding,
                            name='primarycap_conv2d')(inputs)
     outputs = layers.Reshape(target_shape=[-1, dim_capsule], name='primarycap_reshape')(output)
     return layers.Lambda(squash, name='primarycap_squash')(outputs)
@@ -245,7 +251,7 @@ def CapsNet(input_shape, n_class, routings):
     x = layers.Input(shape=input_shape)
 
     # Layer 1: Just a conventional Conv2D layer
-    conv1 = layers.Conv2D(filters=256, kernel_size=9, strides=1, padding='valid', activation='relu', name='conv1')(x)
+    conv1 = layers.Conv2D(filters=128, kernel_size=9, strides=1, padding='valid', activation='relu', name='conv1')(x)
 
     # Layer 2: Conv2D layer with `squash` activation, then reshape to [None, num_capsule, dim_capsule]
     primarycaps = PrimaryCap(conv1, dim_capsule=8, n_channels=32, kernel_size=9, strides=2, padding='valid')
@@ -294,54 +300,43 @@ def margin_loss(y_true, y_pred):
 
     return K.mean(K.sum(L, 1))
 
-#define the model
-model, eval_model, manipulate_model = CapsNet(input_shape=(28, 28, 1),
+
+def capsule_prediction(image_path):
+    # define the model
+    model, eval_model, manipulate_model = CapsNet(input_shape=(28, 28, 3),
                                                   n_class=10,
                                                   routings=3)
-eval_model.summary()
+    eval_model.summary()
+    print(os.path.dirname(os.path.abspath(__file__)))
+    dir_name = os.path.dirname(os.path.abspath(__file__))
+    eval_model.load_weights(dir_name + "/best_weights_capsule_train.h5")
 
-eval_model.load_weights("/content/drive/My Drive/Models for Goz project/best_weights_capsule_new_greyscale.h5")
-#setting up predictions
-image_path = "/content/drive/My Drive/Models for Goz project/0b494c44-8cd0-4491-bdfd-8a354209c3ae___RS_Erly.B 9561.JPG"
-new_img = image.load_img(image_path, target_size=(28, 28), color_mode="grayscale")
-the_image = image.load_img(image_path)
-img = image.img_to_array(new_img)
-img = np.expand_dims(img, axis=0)
-img = img/255
+    # setting up predictions
+    new_img = image.load_img(image_path, target_size=(28, 28))
+    the_image = image.load_img(image_path)
+    img = image.img_to_array(new_img)
+    img = np.expand_dims(img, axis=0)
+    img = img / 255
 
-prediction, y_recon = eval_model.predict(img)
-li = ["Bacterial_spot", "Early_blight","healthy", "Late_blight", "Leaf_Mold", "mosaic_virus", "Septoria_leaf_spot", "spider_mite","Target_Spot","Yellow_Leaf_Curl"]
-# decode the results into a list of tuples (class, description, probability)
-# (one such list for each sample in the batch)
-class_name = li[prediction.argmax()]
+    prediction, y_recon = eval_model.predict(img)
+    li = ["Bacterial_spot", "Early_blight", "healthy", "Late_blight", "Leaf_Mold", "mosaic_virus", "Septoria_leaf_spot",
+          "spider_mite", "Target_Spot", "Yellow_Leaf_Curl"]
+    # decode the results into a list of tuples (class, description, probability)
+    # (one such list for each sample in the batch)
+    class_name = li[prediction.argmax()]
 
-'''
-d = prediction.flatten()
-j = d.max()
-for index,item in enumerate(d):
-    if item == j:
-        class_name = li[index]
-'''
+    '''
+    d = prediction.flatten()
+    j = d.max()
+    for index,item in enumerate(d):
+        if item == j:
+            class_name = li[index]
+    '''
 
-#ploting image with predicted class name
-plt.figure(figsize = (4,4))
-plt.imshow(the_image)
-plt.axis('off')
-plt.title(class_name)
-plt.show()
-
-#to plot all the images
-image_paths = ["/content/drive/My Drive/Models for Goz project/Bacterial_Spot.JPG", "/content/drive/My Drive/Models for Goz project/Early_blight.JPG", "/content/drive/My Drive/Models for Goz project/healthy.JPG" ,"/content/drive/My Drive/Models for Goz project/Late_Blight.JPG", "/content/drive/My Drive/Models for Goz project/Leaf_Mold.JPG", "/content/drive/My Drive/Models for Goz project/Mosaic_Virus.JPG", "/content/drive/My Drive/Models for Goz project/Septorial_Leaf_Spot.JPG", "/content/drive/My Drive/Models for Goz project/Spider_Mite.JPG", "/content/drive/My Drive/Models for Goz project/Target_Spot.JPG", "/content/drive/My Drive/Models for Goz project/Yellow_Leaf_curl.JPG"]
-h, w = 12, 12
-li = ["Bacterial_spot", "Early_blight","healthy", "Late_blight", "Leaf_Mold", "mosaic_virus", "Septoria_leaf_spot", "spider_mite","Target_Spot","Yellow_Leaf_Curl"]
-n_rows, n_cols = 2,5
-figsize = [18,18]
-fig, ax = plt.subplots(nrows = n_rows, ncols = n_cols, figsize = figsize)
-for i, axi in enumerate(ax.flat):
-  the_image = mpimg.imread(image_paths[i] )
-#  img = image.img_to_array(the_image)
-  axi.imshow(the_image, cmap=mpl.cm.gray)
-  axi.set_title(li[i])
-
-plt.tight_layout(True)
-plt.show()
+    # ploting image with predicted class name
+    '''plt.figure(figsize=(4, 4))
+    plt.imshow(the_image)
+    plt.axis('off')
+    plt.title(class_name)'''
+    K.clear_session()
+    return {'disease': class_name}
