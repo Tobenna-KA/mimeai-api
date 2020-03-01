@@ -37,6 +37,7 @@ def api_prediction():
     js = json.dumps({
         'disease': prediction['disease'],
         'accuracy': 92,
+        'image_path': 'predicted_images/' + prediction['disease'] + "/" + os.path.basename(image_path),
         'success': True
     })
     resp = Response(js, status=200, mimetype='application/json')
