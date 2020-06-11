@@ -1,4 +1,4 @@
-##Install Dependencies
+## Install Dependencies
 pip install -r requirements.txt
 
 Start App
@@ -29,7 +29,7 @@ mask_2 (Mask)                   (None, 160)          0           digitcaps[0][0]
 __________________________________________________________________________________________________
 capsnet (Length)                (None, 10)           0           digitcaps[0][0]                  
 __________________________________________________________________________________________________
-decoder (Sequential)            (None, 28, 28, 3)    3018544     mask_2[0][0]                     
+- decoder (Sequential)            (None, 28, 28, 3)    3018544     mask_2[0][0]                     
 ==================================================================================================
 Total params: 7,178,800
 Trainable params: 7,178,800
