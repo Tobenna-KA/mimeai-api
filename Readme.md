@@ -1,11 +1,11 @@
 ## Install Dependencies
 pip install -r requirements.txt
 
-Start App
+#### Start App
 
-export FLASK_APP=server.py
-export FLASK_ENV=development
-flask run
+- `export FLASK_APP=server.py`
+- `export FLASK_ENV=development`
+- `flask run`
 
 client side can be found at [link](https://github.com/Tobenna-KA/mimeai/)
 
