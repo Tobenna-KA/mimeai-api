@@ -15,7 +15,7 @@ RUN pip install pipenv
 
 RUN pip install pip --upgrade
 
-RUN pipenv install
+RUN pip install --no-cache-dir -r requirements.txt
 
 EXPOSE 5000
 CMD ["flask", "run"]
