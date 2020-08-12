@@ -4,10 +4,14 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-flask = "*"
 flasgger = "*"
 flask-marshmallow = "*"
 apispec = "*"
+tensorflow = "*"
+imutils = "*"
+opencv-python = "*"
+Flask = "==1.1.2"
+Keras = "*"
 
 [dev-packages]
 

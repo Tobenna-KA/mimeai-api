@@ -1,7 +1,10 @@
 Flask==1.1.2
+<<<<<<< HEAD
 pandas==1.0.3
 numpy==1.18.2
 sklearn==0.0
+=======
+>>>>>>> new
 tensorflow
 keras
 setuptools>=41.0.0
