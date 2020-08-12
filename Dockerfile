@@ -13,7 +13,7 @@ COPY . .
 
 RUN pip install pipenv
 
-RUN pipenv install
+RUN pipenv install --upgrade pip
 
 EXPOSE 5000
 CMD ["pipenv", "run", "python", "server.py"]
