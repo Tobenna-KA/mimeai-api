@@ -13,7 +13,7 @@ COPY . .
 
 RUN pip install pipenv
 
-RUN pipenv install --no-cache-dir -r requirements.txt
+RUN pipenv install
 
 EXPOSE 5000
 CMD ["pipenv", "run", "python", "server.py"]
