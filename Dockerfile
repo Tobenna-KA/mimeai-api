@@ -13,7 +13,9 @@ COPY . .
 
 RUN pip install pipenv
 
-RUN pipenv --no-cache-dir install --upgrade pip
+RUN pip install pip --upgrade
+
+RUN pipenv install
 
 EXPOSE 5000
-CMD ["pipenv", "run", "python", "server.py"]
+CMD ["flask", "run"]
