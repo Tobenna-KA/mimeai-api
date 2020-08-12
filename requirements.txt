@@ -1,4 +1,5 @@
 tensorflow
 keras
+setuptools>=41.0.0
 imutils
 opencv-python
