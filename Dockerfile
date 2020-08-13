@@ -1,21 +1,51 @@
-FROM python:3.7.2
+#FROM python:3.7.2
+#
+#ENV FLASK_APP server.py
+#
+#ENV FLASK_ENV development
+#
+#WORKDIR /usr/src/app
+#
+#FROM continuumio/miniconda3
+#
+#RUN conda create -n env python=3.6
+#
+#RUN echo "source activate env" > ~/.bashrc
+#
+#ENV PATH /opt/conda/envs/env/bin:$PATH
+#
+## copy requirements.txt
+#COPY ./requirements.txt /usr/src/app/requirements.txt
+#
+#COPY . .
+#
+#RUN pip install --no-cache-dir -r requirements.txt
+#
+#EXPOSE 5000
+#
+#CMD ["python", "-m", "flask", "run"]
 
-ENV FLASK_APP server.py
+FROM continuumio/miniconda3
 
-ENV FLASK_ENV development
+WORKDIR /app
 
-WORKDIR /usr/src/app
+# Create the environment:
+COPY environment.yml .
+RUN conda env create -f environment.yml
 
-# copy requirements.txt
-COPY ./requirements.txt /usr/src/app/requirements.txt
+
+# Make RUN commands use the new environment:
+SHELL ["conda", "run", "-n", "myenv", "/bin/bash", "-c"]
 
 COPY . .
+RUN pip install -r requirements.txt
 
-RUN pip install pipenv
+# Make sure the environment is activated:
+RUN echo "Make sure flask is installed:"
+RUN python -c "import flask"
 
-RUN pip install pip --upgrade
-
-RUN pip install --no-cache-dir -r requirements.txt
-
+# The code to run when container is started:
 EXPOSE 5000
-CMD ["flask", "run"]
+
+CMD ["conda", "run", "-n", "myenv"]
+CMD ["conda", "run", "-n", "myenv", "python", "-m", "flask", "run"]

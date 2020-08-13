@@ -1,6 +1,6 @@
-#importint the necessary lirbraries
+# importint the necessary lirbraries
 
-#import tensorflow.keras as kerasfrom __future__ import print_function
+# import tensorflow.keras as kerasfrom __future__ import print_function
 from __future__ import print_function
 
 import keras
@@ -19,7 +19,6 @@ from keras.preprocessing.image import img_to_array
 from keras import layers
 from keras.models import load_model
 import matplotlib.image as mpimg
-
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -239,6 +238,8 @@ def PrimaryCap(inputs, dim_capsule, n_channels, kernel_size, strides, padding):
     outputs = layers.Concatenate(axis=1)(outputs)
     return layers.Lambda(squash)(outputs)
 """
+
+
 def CapsNet(input_shape, n_class, routings):
     """
     A Capsule Network on MNIST.
@@ -271,7 +272,7 @@ def CapsNet(input_shape, n_class, routings):
 
     # Shared Decoder model in training and prediction
     decoder = models.Sequential(name='decoder')
-    decoder.add(layers.Dense(512, activation='relu', input_dim=16*n_class))
+    decoder.add(layers.Dense(512, activation='relu', input_dim=16 * n_class))
     decoder.add(layers.Dense(1024, activation='relu'))
     decoder.add(layers.Dense(np.prod(input_shape), activation='sigmoid'))
     decoder.add(layers.Reshape(target_shape=input_shape, name='out_recon'))
@@ -312,7 +313,12 @@ def capsule_prediction(image_path):
     eval_model.load_weights(dir_name + "/best_weights_capsule_train.h5")
 
     # setting up predictions
-    new_img = image.load_img(image_path, target_size=(28, 28))
+    new_img = None
+    try:
+        new_img = image.load_img(image_path, target_size=(28, 28))
+    except OSError:
+        return {'error': 'could not identify image'}
+
     the_image = image.load_img(image_path)
     img = image.img_to_array(new_img)
     img = np.expand_dims(img, axis=0)

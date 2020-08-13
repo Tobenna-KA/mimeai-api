@@ -7,6 +7,10 @@ pip install -r requirements.txt
 - `export FLASK_ENV=development`
 - `flask run`
 
+## Docker
+- ` docker rm -f $(docker ps -a -q)`
+
+
 client side can be found at [link](https://github.com/Tobenna-KA/mimeai/)
 
 ## Sample report

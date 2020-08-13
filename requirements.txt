@@ -7,3 +7,8 @@ opencv-python
 Flask>=1.1.2
 Keras
 setuptools>=41.0.0
+matplotlib
+numpy<=1.19.0
+seaborn
+sklearn
+pickle

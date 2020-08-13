@@ -1,3 +1,5 @@
+import shutil
+
 from http import HTTPStatus
 from flask import Blueprint, url_for, request, Response
 from flasgger import swag_from
@@ -31,7 +33,7 @@ def welcome():
     return WelcomeSchema().dump(result), 200
 
 
-@home_api.route('/prediction')
+@home_api.route('/prediction', methods=['POST'])
 @swag_from({
     'responses': {
         HTTPStatus.OK.value: {
@@ -46,11 +48,28 @@ def api_prediction():
     image_path = 'images/'
     if os.path.isdir(image_path) is False:
         os.mkdir(image_path, 0o777)
-    image_path += str(datetime.datetime.now()) + ".png"
+    image_path += str(datetime.datetime.now()) + ".jpeg"
+    # print(request.json['image'])
+    image_base64 = request.json['image']
+    if str(request.json['image']).startswith('data:image/jpeg;base64,'):
+        image_base64 = image_base64[len('data:image/jpeg;base64,'): len(image_base64)]
     with open(image_path, "wb") as f:
-        f.write(base64.b64decode(str(request.json['image'])))
+        f.write(base64.b64decode(image_base64))
 
     prediction = capsule_net.capsule_prediction(image_path)
+
+    if 'error' in prediction:
+        js = json.dumps({
+            'disease': 'Error',
+            'description': prediction['error'],
+            'accuracy': 0,
+            'image_path': '',
+            'success': True
+        })
+        resp = Response(js, status=200, mimetype='application/json')
+        return resp
+
+    print(os.path)
     if not os.path.isdir('predicted_images'):
         os.mkdir('predicted_images', 0o777)
     if not os.path.isdir('static/predicted_images/' + prediction['disease']):
