@@ -1,12 +1,10 @@
 Flask==1.1.2
-<<<<<<< HEAD
-pandas==1.0.3
-numpy==1.18.2
-sklearn==0.0
-=======
->>>>>>> new
+flasgger
+flask-marshmallow
+apispec
 tensorflow
-keras
-setuptools>=41.0.0
 imutils
 opencv-python
+Flask>=1.1.2
+Keras
+setuptools>=41.0.0
