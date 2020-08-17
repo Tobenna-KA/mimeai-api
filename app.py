@@ -2,9 +2,10 @@ from flask import Flask
 from flasgger import Swagger
 from api.route.home import home_api
 
-def create_app():
-    app = Flask(__name__)
+app = Flask(__name__)
 
+
+def create_app():
     app.config['SWAGGER'] = {
         'title': 'Flask API Starter Kit',
     }
@@ -13,6 +14,15 @@ def create_app():
     app.register_blueprint(home_api, url_prefix='/api')
 
     return app
+
+
+@app.after_request
+def after_request(response):
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    response.headers.add('Access-Control-Allow-Origin', 'Content-Type,Authorization')
+    response.headers.add('Access-Control-Allow-Origin', 'GET,PUT,POST,DELETE')
+
+    return response
 
 
 if __name__ == '__main__':
