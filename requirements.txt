@@ -1,7 +1,7 @@
 flasgger
 flask-marshmallow
 apispec
-tensorflow
+tensorflow==1.14.0
 imutils
 opencv-python
 Flask>=1.1.2
