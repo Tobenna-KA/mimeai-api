@@ -308,7 +308,6 @@ def capsule_prediction(image_path):
                                                   n_class=10,
                                                   routings=3)
     eval_model.summary()
-    print(os.path.dirname(os.path.abspath(__file__)))
     dir_name = os.path.dirname(os.path.abspath(__file__))
     eval_model.load_weights(dir_name + "/best_weights_capsule_train.h5")
 

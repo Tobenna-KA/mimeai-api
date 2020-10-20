@@ -6,6 +6,7 @@ from flasgger import swag_from
 from api.model.welcome import WelcomeModel
 from api.schema.welcome import WelcomeSchema
 import api.src.capsule_net as capsule_net
+import api.src.pipeline as pipeline
 import json
 import base64
 import os
@@ -42,6 +43,7 @@ def welcome():
         }
     }
 })
+
 def api_prediction():
     #     print(request.headers['Authorization'])
     # print(request.json['image'])
@@ -55,8 +57,11 @@ def api_prediction():
         image_base64 = image_base64[len('data:image/jpeg;base64,'): len(image_base64)]
     with open(image_path, "wb") as f:
         f.write(base64.b64decode(image_base64))
-
-    prediction = capsule_net.capsule_prediction(image_path)
+    print(os.path.dirname(os.path.abspath(__file__)))
+    dir_name = os.path.dirname(os.path.abspath(__file__))
+    # prediction = capsule_net.capsule_prediction(image_path)
+    prediction = pipeline.get_class(image_path)
+    # prediction = pipeline.get_class(dir_name + '/003a5321-0430-42dd-a38d-30ac4563f4ba___Com.G_TgS_FL 8121_180deg.jpeg')
 
     if 'error' in prediction:
         js = json.dumps({
