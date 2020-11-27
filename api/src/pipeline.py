@@ -72,6 +72,8 @@ classifier.add(BatchNormalization())
 
 classifier.add(Dense(units = 10, activation = "softmax"))
 dir_name = os.path.dirname(os.path.abspath(__file__))
+print(os.path.isfile(dir_name + '/best_weights_late_2020.hdf5'))
+print(dir_name + '/best_weights_late_2020.hdf5')
 classifier.load_weights(dir_name + '/best_weights_late_2020.hdf5')
 
 li = ['Bacterial_spot','Early_blight','Late_blight','Leaf_Mold','Septoria_leaf_spot','Target_Spot','Yellow_Leaf_Curl','healthy','mosaic_virus','spider_mite']

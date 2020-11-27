@@ -1,9 +1,9 @@
 ## Install Dependencies
-pip install -r requirements.txt
+pip3 install -r requirements.txt
 
 #### Start App
 
-- `export FLASK_APP=server.py`
+- `export FLASK_APP=wisgi.py`
 - `export FLASK_ENV=development`
 - `flask run`
 
